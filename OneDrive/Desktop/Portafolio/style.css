@@ -1,0 +1,145 @@
+/* ==========================================
+   1. VARIABLES GLOBALES Y CONFIGURACIÓN BASE
+   ========================================== */
+:root {
+    --bg-color: #0a0a0a;          /* Color de fondo principal muy oscuro para la página */
+    --terminal-bg: #121212;       /* Color de fondo estilo terminal oscuro para las tarjetas */
+    --neon-orange: #ff6b00;       /* Tono principal naranja brillante con estética neón */
+    --neon-green: #39ff14;        /* Tono principal verde brillante con estética neón */
+    --text-secondary: #a0a0a0;    /* Color gris secundario para textos atenuados */
+}
+
+/* Configuración de comportamiento general del documento HTML */
+html {
+    scroll-behavior: smooth;             /* Hace que la navegación entre anclajes sea con desplazamiento suave */
+    scroll-padding-top: 90px;            /* Agrega un respiro superior al hacer scroll para que la barra de navegación no tape las secciones */
+}
+
+/* Estilos aplicados al cuerpo del documento */
+body {
+    background-color: var(--bg-color);   /* Aplica el color de fondo definido en las variables */
+    font-family: 'Fira Code', monospace; /* Define una fuente monoespaciada con estilo de código/terminal */
+    color: #f8f9fa;                      /* Color base claro para el texto general */
+    scroll-behavior: smooth;             /* Asegura el desplazamiento suave (respaldo adicional) */
+}
+
+/* Clase auxiliar para aplicar el fondo estilo terminal */
+.bg-terminal {
+    background-color: var(--terminal-bg);
+}
+
+/* ==========================================
+   2. COLORES NEÓN Y EFECTOS DE BRILLO (SHADOW)
+   ========================================== */
+.text-neon-orange {
+    color: var(--neon-orange);
+    text-shadow: 0 0 8px rgba(255, 107, 0, 0.4); /* Proyecta un brillo difuminado naranja alrededor del texto */
+}
+
+.text-neon-green {
+    color: var(--neon-green);
+    text-shadow: 0 0 8px rgba(57, 255, 20, 0.4); /* Proyecta un brillo difuminado verde alrededor del texto */
+}
+
+.text-secondary-custom {
+    color: var(--text-secondary); /* Aplica el tono gris secundario personalizado */
+}
+
+/* Clases utilitarias para forzar colores en los bordes */
+.border-neon-green {
+    border-color: var(--neon-green) !important;
+}
+
+.border-neon-orange {
+    border-color: var(--neon-orange) !important;
+}
+
+/* ==========================================
+   3. EFECTOS DE INTERACCIÓN (HOVER) EN NAVBAR
+   ========================================== */
+.hover-neon {
+    transition: color 0.3s ease, text-shadow 0.3s ease; /* Define una transición fluida de 0.3 segundos para cambios de color y brillo */
+}
+
+.hover-neon:hover {
+    color: var(--neon-orange) !important;       /* Cambia el color del texto a naranja neón al pasar el cursor */
+    text-shadow: 0 0 10px var(--neon-orange);   /* Intensifica el brillo del texto al pasar el cursor */
+}
+
+/* ==========================================
+   4. ESTILOS Y ANIMACIONES DE BOTONES
+   ========================================== */
+/* Botón principal con contorno naranja neón */
+.btn-neon-orange {
+    background-color: transparent;
+    color: var(--neon-orange);
+    border: 2px solid var(--neon-orange);
+    transition: all 0.3s ease-in-out;
+}
+
+.btn-neon-orange:hover {
+    background-color: var(--neon-orange);       /* Rellena completamente el botón de naranja al pasar el cursor */
+    color: #000;                                /* Cambia el color del texto a negro para generar contraste */
+    box-shadow: 0 0 15px var(--neon-orange);    /* Crea un destello o sombra brillante alrededor del botón */
+}
+
+/* Botón secundario con contorno verde neón */
+.btn-outline-neon-green {
+    color: var(--neon-green);
+    border: 2px solid var(--neon-green);
+    background-color: transparent;
+    transition: all 0.3s ease-in-out;
+}
+
+.btn-outline-neon-green:hover {
+    background-color: var(--neon-green);        /* Rellena el botón de verde al pasar el cursor */
+    color: #000;                                /* Cambia el color del texto a negro */
+    box-shadow: 0 0 15px var(--neon-green);     /* Genera un destello verde brillante */
+}
+
+/* Botón con contorno naranja más delgado para tarjetas o elementos secundarios */
+.btn-outline-neon-orange {
+    color: var(--neon-orange);
+    border: 1px solid var(--neon-orange);
+    background-color: transparent;
+    transition: all 0.3s ease-in-out;
+}
+
+.btn-outline-neon-orange:hover {
+    background-color: var(--neon-orange);
+    color: #000;
+    box-shadow: 0 0 10px var(--neon-orange);
+}
+
+/* ==========================================
+   5. TARJETAS DE PROYECTOS Y ANIMACIONES
+   ========================================== */
+.project-card {
+    transition: transform 0.3s ease, box-shadow 0.3s ease; /* Suaviza las animaciones de movimiento y sombras */
+}
+
+.project-card:hover {
+    transform: translateY(-8px);                        /* Eleva sutilmente la tarjeta hacia arriba al colocar el cursor encima */
+    box-shadow: 0 10px 25px rgba(255, 107, 0, 0.25);    /* Proyecta una sombra difuminada de tono naranja en la parte inferior */
+}
+
+/* ==========================================
+   6. ANIMACIÓN DE SALUDO (EMOJI DE MANO)
+   ========================================== */
+.wave {
+    display: inline-block;
+    animation: wave-animation 2s infinite;              /* Aplica la animación de rotación de forma continua cada 2 segundos */
+    transform-origin: 70% 70%;                          /* Establece el punto de pivote o eje de giro en la base de la mano */
+}
+
+/* Fotogramas clave que controlan el movimiento de giro para simular el saludo */
+@keyframes wave-animation {
+    0% { transform: rotate(0deg); }
+    10% { transform: rotate(14deg); }
+    20% { transform: rotate(-8deg); }
+    30% { transform: rotate(14deg); }
+    40% { transform: rotate(-4deg); }
+    50% { transform: rotate(10deg); }
+    60% { transform: rotate(0deg); }
+    100% { transform: rotate(0deg); }
+}
