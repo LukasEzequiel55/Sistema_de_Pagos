@@ -1,6 +1,9 @@
 package com.payments.entities;
 
-public class BankTransferPayment {
+import com.payments.exceptions.InsufficientFundsException;
+import com.payments.exceptions.InvalidPaymentException;
+
+public class BankTransferPayment extends Payment{
 
     private int numCuenta;
     private String banco;
@@ -14,20 +17,19 @@ public class BankTransferPayment {
     }//constructor BankTrasnferPayment
 
 
-    public boolean procesarPagoTrans(double montoPagar) {
+    public boolean procesarPagoTrans(double montoPagar) throws InvalidPaymentException, InsufficientFundsException{
         if (numCuenta <= 0 || banco.isBlank() || saldoTransferencia <= 0) {
-            System.out.println("Datos bancarios invalidos");
-            return false;
+            throw new InvalidPaymentException("Datos bancarios invalidos");
         }
         if (montoPagar <= 0) {
-            System.out.println("Monto invalido");
-            return false;
+            throw new InvalidPaymentException("Monto invalido");
         }
         if (saldoTransferencia < montoPagar) {
-            System.out.println("Saldo insuficiente");
-            return false;
+            throw new InsufficientFundsException("Saldo insuficiente");
+            String.format("Saldo insuficiente. Saldo disponible: $%.2f | Requerido: $%.2f", saldoTransferencia, getMonto());
         }
         saldoTransferencia -= montoPagar;
+        setEstado(PaymentStatus.APPROVED);
         System.out.println("Transferencia aprobada");
         return true;
     }//ProcesarPago Transferencia

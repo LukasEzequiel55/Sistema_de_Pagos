@@ -1,12 +1,16 @@
 package com.payments.entities;
 
-public class PayPalPayment {
+import com.payments.interfaces.Refundable;
+import com.payments.exceptions.InsufficientFundsException;
+import com.payments.exceptions.InvalidPaymentException;
+
+public abstract class PayPalPayment extends Payment implements Refundable {
 
     private String email;
     private double saldoPayPal;
 
     public PayPalPayment(String id, double monto, String email, double saldoPayPal) {
-        super (id, monto);
+        super(id, monto);
         this.email = email;
         this.saldoPayPal = saldoPayPal;
     }//Constructor PayPalPayment
@@ -16,18 +20,17 @@ public class PayPalPayment {
         return email != null && email.matches(regex);
     }//Validar email
 
-    public boolean procesarPagoPay(double montoPagar) {
+    public boolean procesarPagoPay(double montoPagar) throws InvalidPaymentException, InsufficientFundsException{
         if (!validarEmailPayPal()) {
             System.out.println("Correo electronico invalido");
             return false;
         }
         if (montoPagar <= 0) {
-            System.out.println("Monto invalido");
-            return false;
+            throw new InvalidPaymentException("Monto invalido");
         }
         if (saldoPayPal < montoPagar) {
-            System.out.println("Saldo insuficiente");
-            return false;
+            throw new InsufficientFundsException("Saldo insuficiente");
+            String.format("Saldo insuficiente. Saldo disponible: $%.2f | Requerido: $%.2f", getMonto());
         }
         saldoPayPal -= montoPagar;
         System.out.println("Pago PayPal aprobado");
@@ -57,5 +60,21 @@ public class PayPalPayment {
                 "email='" + email + '\'' +
                 ", saldoPayPal=" + saldoPayPal +
                 '}' + super.toString();
+    }//to string
+    @Override
+    public void refund(double amount) throws InvalidPaymentException {
+        refund(getMonto);
     }//toString
+
+    @Override
+    public void refund(double amount) throws InvalidPaymentException {
+        if (getEstado() != PaymentStatus.APPROVED) {
+            throw new InvalidPaymentException("Solo se pueden reembolsar pagos con estado APROBADO.");
+        }
+        if (amount <= 0 || amount > getMonto()) {
+            throw new InvalidPaymentException("El monto especificado para reembolso es inválido.");
+        }
+        saldoPayPal += amount;
+    }
+
 }//Class PayPalPayment
