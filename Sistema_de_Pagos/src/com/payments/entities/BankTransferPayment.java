@@ -6,7 +6,8 @@ public class BankTransferPayment {
     private String banco;
     private double saldoTransferencia;
 
-    public BankTransferPayment(int numCuenta, String banco, double saldoTransferencia) {
+    public BankTransferPayment(String id, double monto, int numCuenta, String banco, double saldoTransferencia) {
+        super (id, monto);
         this.numCuenta = numCuenta;
         this.banco = banco;
         this.saldoTransferencia = saldoTransferencia;
@@ -42,4 +43,13 @@ public class BankTransferPayment {
     public double getSaldoTransferencia() {return saldoTransferencia;}// get saldoTransferencia
 
     public void setSaldoTransferencia(double saldoTransferencia) {this.saldoTransferencia = saldoTransferencia;} //set saldoTransferencia
+
+    @Override
+    public String toString() {
+        return "BankTransferPayment{" +
+                "numCuenta=" + numCuenta +
+                ", banco='" + banco + '\'' +
+                ", saldoTransferencia=" + saldoTransferencia +
+                '}' + super.toString();
+    }
 }

@@ -5,7 +5,8 @@ public class PayPalPayment {
     private String email;
     private double saldoPayPal;
 
-    public PayPalPayment(String email, double saldoPayPal) {
+    public PayPalPayment(String id, double monto, String email, double saldoPayPal) {
+        super (id, monto);
         this.email = email;
         this.saldoPayPal = saldoPayPal;
     }//Constructor PayPalPayment
@@ -55,6 +56,6 @@ public class PayPalPayment {
         return "PayPalPayment{" +
                 "email='" + email + '\'' +
                 ", saldoPayPal=" + saldoPayPal +
-                '}';
+                '}' + super.toString();
     }//toString
 }//Class PayPalPayment
