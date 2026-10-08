@@ -20,4 +20,20 @@ public class Payment {
     }
         public abstract void processPayment() throws Exception;
 
+        public String getId() {
+            return id;
+        }
+
+        public double getMonto() {
+            return monto;
+        }
+
+        public PaymentStatus getEstado() {
+            return estado;
+        }
+
+        protected void setEstado(PaymentStatus estado) {
+            this.estado = estado;
+        }
+
 } // class Payment
