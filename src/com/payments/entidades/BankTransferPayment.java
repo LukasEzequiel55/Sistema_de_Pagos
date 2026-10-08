@@ -1,4 +1,4 @@
-package com.payments.entities;
+package com.payments.entidades;
 
 public class BankTransferPayment {
 
