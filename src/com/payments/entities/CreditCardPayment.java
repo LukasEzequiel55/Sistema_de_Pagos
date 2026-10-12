@@ -2,6 +2,7 @@ package com.payments.entities;
 
 import com.payments.exceptions.InsufficientFundsException;
 import com.payments.exceptions.InvalidPaymentException;
+import com.payments.interfaces.Refundable;
 
 public class CreditCardPayment extends Payment implements Refundable{
     private String cardNumber;
