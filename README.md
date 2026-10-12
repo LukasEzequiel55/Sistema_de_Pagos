@@ -1,10 +1,10 @@
 # Sistema de Procesamiento de Pagos en Java
 
 ## Integrantes
-- Hannia Victoria
-- Alexandra Pichardo
+- Hannia Victoria Reyes Rojas
+- Alexandra Pichardo Angeles
 - Daniel Rosas Monroy
-- Ulises Abraham Ortíz Sanchez
+- Ulises Abraham Ortíz Sánchez
 
 ---
 
@@ -32,22 +32,22 @@ Sistema en Java enfocado en la gestión y procesamiento de pagos con arquitectur
 
 ## Como nos distribuimos la participación
 
-### Alexandra Pichardo
+### Alexandra Pichardo Angeles
 - `Payment`
 - `CreditCardPayment`
 
-### Hannia Victoria Reyes
+### Hannia Victoria Reyes Rojas
 
 - `PayPalPayment`
 - `BankTransferPayment`
 
-### Ulises Abraham Ortíz
+### Ulises Abraham Ortíz Sánchez
 
 - `Refundable`
 - `Excepciones`
 - `Validaciones`
 
-### Daniel Rosas
+### Daniel Rosas Monroy
 - `PaymentManager`
 - `PaymentsApp`
 - `Pruebas de integración`
@@ -67,6 +67,23 @@ Sistema en Java enfocado en la gestión y procesamiento de pagos con arquitectur
 #### Enum `PaymentStatus`
 * **Propósito:** Controla los estados del ciclo de vida de un pago (`PENDING`, `APPROVED`, `REJECTED`).
 * **Ventajas técnicas:** Se creó como un enumerador independiente para centralizar los estados, evitando el uso de cadenas de texto (*strings*), previniendo errores tipográficos (*"stringly typed errors"*) y asegurando que los estados de las transacciones sean estrictamente consistentes en todos los módulos del equipo.
+
+---
+
+### Clase `CreditCardPayment`
+* **Ubicación:** `com.payments.entities`
+* **Propósito:** Permite simular y procesar pagos mediante tarjetas de crédito. Valida los datos de la tarjeta, verifica que exista crédito disponible y permite realizar reembolsos de pagos aprobados.
+* **Atributos:**
+  * `cardNumber`: número de la tarjeta.
+  * `cardHolder`: nombre del titular.
+  * `creditLimit`: crédito disponible para realizar pagos.
+* **Constructor:**
+  * `CreditCardPayment`: inicializa los atributos, utiliza `super` para llamar al constructor de la clase padre y lanza `InvalidPaymentException` si los datos de la tarjeta son inválidos.
+* **Métodos principales:**
+  * `processPayment()`: verifica que el monto no supere el crédito disponible. Si se cumple, descuenta el monto y cambia el estado a `APPROVED`; de lo contrario, cambia a `REJECTED` y lanza `InsufficientFundsException`.
+  * `refund()`: realiza el reembolso del monto total del pago.
+  * *Getters*: permiten consultar atributos.
+  * `toString()`: muestra la información del objeto, ocultando parte del número de tarjeta por seguridad.
 
 ---
 
@@ -102,17 +119,32 @@ Sistema en Java enfocado en la gestión y procesamiento de pagos con arquitectur
 
 ---
 
-### `Refundable` y Control de Errores
+### Interfaz `Refundable`
+* **Ubicación:** `com.payments.interfaces`
+* **Propósito:** Define el contrato de capacidad para aquellos métodos de pago que soportan devoluciones de dinero de manera selectiva.
+* **Métodos principales:**
+  * `refund()`: Realiza el reembolso por el total del monto original pagado.
+  * `refund(double amount)`: Permite especificar un monto parcial para la devolución de fondos.
 
-* **`Refundable` (`com.payments.interfaces`)**: Interfaz que dota selectivamente la capacidad de reembolsos totales (`refund()`) o parciales (`refund(double amount)`).
-* **Excepciones Personalizadas (`com.payments.exceptions`)**: 
-  * `InvalidPaymentException`: Bloquea datos corruptos o inválidos desde el constructor y previene reembolsos en pagos no aprobados.
-  * `InsufficientFundsException`: Rechaza la transacción cambiando el estado a `REJECTED` cuando los fondos son insuficientes durante el cobro.
-* **Sistema de Validaciones**:
-  * **Constructor**: Garantiza que ningún objeto nazca con datos incorrectos lanzando `InvalidPaymentException`.
-  * **Procesamiento**: Verifica límites y saldos al cobrar, descontando y aprobando el pago (`APPROVED`) o rechazándolo por falta de fondos.
-  * **Reembolsos**: Valida que el pago esté aprobado y el monto sea válido antes de restaurar el saldo.
-  * 
+---
+
+### Excepciones Personalizadas
+* **Ubicación:** `com.payments.exceptions`
+* **Clases:**
+  * `InvalidPaymentException`: Excepción de tipo *Checked Exception* que se lanza cuando se detectan datos de entrada inválidos (por ejemplo: IDs vacíos, montos menores o iguales a cero, números de tarjeta incorrectos, correos electrónicos malformados o intentos de reembolso sobre pagos no aprobados).
+  * `InsufficientFundsException`: Excepción de tipo *Checked Exception* que se lanza durante el procesamiento de la transacción cuando el saldo disponible o el límite de crédito en la cuenta es menor al monto requerido para el pago.
+
+---
+
+### Sistema de Validaciones
+* **Validación en el Constructor (Fase de Inicialización):** 
+  * Se ejecutan controles estrictos apenas se instancia un método de pago. 
+  * Si los datos obligatorios de la tarjeta, la cuenta o PayPal son incorrectos, o si el monto inicial es inválido, el sistema interrumpe la creación del objeto lanzando de inmediato una `InvalidPaymentException`.
+* **Validación en el Procesamiento (`processPayment()`):** 
+  * Al momento de ejecutar el cobro, el sistema verifica que el saldo disponible o el límite de crédito cubra el monto del pago.
+  * Si el dinero no alcanza, la transacción cambia su estado a `REJECTED` y se lanza una `InsufficientFundsException`. Si los fondos son suficientes, se descuenta el monto, se actualiza el estado a `APPROVED` y la operación se procesa con éxito.
+* **Validación de Reembolsos (`refund()`):** 
+  * Comprueba que el estado del pago sea estrictamente `APPROVED` y que el monto a devolver sea válido (mayor a cero y menor o igual al monto original pagado) antes de restaurar los fondos al saldo correspondiente.
 ---
 
 
@@ -128,6 +160,16 @@ Sistema en Java enfocado en la gestión y procesamiento de pagos con arquitectur
   * **Registro y Validación:** Permiten registrar nuevos pagos asegurando que la información sea válida y evitando identificadores duplicados.
   * **Búsqueda y Visualización:** Permiten listar todas las transacciones registradas y localizar un pago específico mediante su identificador único (`ID`).
   * **Cálculo y Conteo:** Permiten obtener el número total de pagos registrados y sumar exclusivamente los montos de aquellos que tienen estado `APPROVED`, omitiendo los rechazados.
+
+---
+
+### Clase `PaymentsApp`
+* **Ubicación:** `com.payments`
+* **Propósito:** Sirve como la clase principal y punto de entrada (`main`) de la aplicación. Su propósito es coordinar la ejecución general del programa, instanciar los diferentes tipos de pago (tarjeta de crédito, PayPal y transferencia bancaria), procesar las transacciones a través de sus respectivas reglas de negocio, gestionar excepciones y utilizar al administrador (`PaymentManager`) para consolidar y consultar los resultados.
+* **Atributos:**
+  * Instancias de control y variables de apoyo utilizadas dentro del flujo principal para ejecutar la simulación de la plataforma de pagos.
+* **Métodos Principales:**
+  * `main(String[] args)`: Método ejecutable que pone en marcha el sistema, crea el objeto `PaymentManager`, genera instancias de prueba para cada pasarela de pago, invoca los métodos de validación y procesamiento, maneja posibles excepciones (como fondos insuficientes o pagos inválidos) y muestra en consola los resultados, totales aprobados y operaciones de reembolso.
 
 
 ---
@@ -145,12 +187,3 @@ Sistema en Java enfocado en la gestión y procesamiento de pagos con arquitectur
    ```
   
 ---
-
-
-## Funcionalidades Implementadas
-
-* **01 — Métodos de Pago:** Soporte para Tarjeta de Crédito (`CreditCardPayment`), PayPal (`PayPalPayment`) y Transferencia Bancaria (`BankTransferPayment`).
-* **02 — Reglas de Procesamiento y Validaciones:** Verificación de límite de crédito, disponibilidad de saldo y sintaxis/formato de campos obligatorios.
-* **03 — Interfaz `Refundable`:** Capacidad de realizar reembolsos parciales o totales aplicada a métodos de pago compatibles.
-* **04 — Manejo de Excepciones Personalizadas:** Captura y prevención de fallos mediante `InsufficientFundsException` e `InvalidPaymentException`.
-* **05 — Gestión Coleccionable y Polimórfica (`PaymentManager`):** Registro, búsqueda por ID, listado detallado y cálculo del total acumulado de transacciones aprobadas mediante `ArrayList<Payment>`.
